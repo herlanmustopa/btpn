@@ -6,382 +6,168 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import { getData, addData } from "../../helpers/actions";
-import Alert from "@mui/material/Alert";
-import { styled } from "@mui/material/styles";
 
 // icon
 import AddIcon from "@mui/icons-material/Add";
 import CancelIcon from "@mui/icons-material/Cancel";
-// import checkmarkFill from "@iconify/icons-eva/checkmark-fill";
-// import closeFill from "@iconify/icons-eva/close-fill";
+// import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
+// import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+// import { grey } from "@mui/material/colors";
 
 import React from "react";
-import { v4 as uuidv4 } from "uuid";
-import moment from "moment";
 
 import {
   IconButton,
   Stack,
   TextField,
+  Typography,
   Autocomplete,
-  Snackbar,
+  Box,
+  Skeleton,
+  // Grid,
 } from "@mui/material";
 
-const ukuran = [
-  {
-    value: "30",
-    label: "30",
-  },
-  {
-    value: "40",
-    label: "40",
-  },
-  {
-    value: "50",
-    label: "50",
-  },
-  {
-    value: "60",
-    label: "60",
-  },
-  {
-    value: "70",
-    label: "70",
-  },
-  {
-    value: "80",
-    label: "80",
-  },
-  {
-    value: "90",
-    label: "90",
-  },
-  {
-    value: "100",
-    label: "100",
-  },
-  {
-    value: "110",
-    label: "110",
-  },
-  {
-    value: "120",
-    label: "120",
-  },
-  {
-    value: "130",
-    label: "130",
-  },
-  {
-    value: "140",
-    label: "140",
-  },
-  {
-    value: "150",
-    label: "150",
-  },
-  {
-    value: "160",
-    label: "160",
-  },
-  {
-    value: "170",
-    label: "170",
-  },
-  {
-    value: "180",
-    label: "180",
-  },
-  {
-    value: "190",
-    label: "190",
-  },
-  {
-    value: "200",
-    label: "200",
-  },
-];
-const provinsi = [
-  {
-    value: "ACEH",
-    label: "Aceh",
-  },
-  {
-    value: "BALI",
-    label: "Bali",
-  },
-  {
-    value: "BANTEN",
-    label: "Banteng",
-  },
-  {
-    value: "DKI JAKARTA",
-    label: "Dki Jakarta",
-  },
-  {
-    value: "JAWA BARAT",
-    label: "Jawa Barat",
-  },
-  {
-    value: "JAWA TENGAH",
-    label: "Jawa Tengah",
-  },
-  {
-    value: "JAWA TIMUR",
-    label: "Jawa Timur",
-  },
-  {
-    value: "KALIMANTAN TIMUR",
-    label: "Kalimantan Timur",
-  },
-  {
-    value: "LAMPUNG",
-    label: "Lampung",
-  },
-  {
-    value: "SULAWESI BARAT",
-    label: "Sulawesi Barat",
-  },
-  {
-    value: "SUMATERA BARAT",
-    label: "Sumatera Barat",
-  },
-  {
-    value: "SUMATERA UTARA",
-    label: "Sumatera Utara",
-  },
-];
-const kota = [
-  {
-    value: "ACEH KOTA",
-    label: "Aceh Kota",
-  },
-  {
-    value: "BULELENG",
-    label: "Buleleng",
-  },
-  {
-    value: "PANDEGLANG",
-    label: "Pandelang",
-  },
-  {
-    value: "KOTA TUA",
-    label: "Kota Tua",
-  },
-  {
-    value: "BANDUNG",
-    label: "Bandung",
-  },
-  {
-    value: "CIREBON",
-    label: "Cirebon",
-  },
-  {
-    value: "PEMALANG",
-    label: "Pemalang",
-  },
-  {
-    value: "CILACAP",
-    label: "Cilacap",
-  },
-  {
-    value: "PURWOREJO",
-    label: "Purworejo",
-  },
-  {
-    value: "TEGAL",
-    label: "Tegal",
-  },
-  {
-    value: "JEMBER",
-    label: "Jember",
-  },
-  {
-    value: "BANYUWANGI",
-    label: "Banyuwangi",
-  },
-  {
-    value: "SITUBONDO",
-    label: "Situbondo",
-  },
-  {
-    value: "PROBOLINGGO",
-    label: "Probolinggo",
-  },
-  {
-    value: "BORNEO",
-    label: "Borneo",
-  },
-  {
-    value: "LAMPUNG TIMUR",
-    label: "Lampung Timur",
-  },
-  {
-    value: "MAMUJU UTARA",
-    label: "Mamuju Utara",
-  },
-  {
-    value: "PADANG PARIAMAN",
-    label: "Padang Pariaman",
-  },
-  {
-    value: "MEDAN",
-    label: "Medan",
-  },
-  {
-    value: "DEPOK",
-    label: "Depok",
-  },
-  {
-    value: "CIMAHI",
-    label: "Cimahi",
-  },
+import axios from "axios";
+
+const type = [
+  { label: "URL", id: 1 },
+  { label: "Plugin", id: 2 },
+  { label: "Rules", id: 3 },
 ];
 
-const ColorButton = styled(Button)(({ theme }) => ({
-  color: "white",
-  backgroundColor: "#16a085",
-  "&:hover": {
-    backgroundColor: "#16a085",
-  },
-}));
 class AddData extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      // value: [ukuran],
+      value: [type[1]],
       setOpen: false,
       setScroll: false,
-      showSnackbar: false,
       scroll: "paper",
+      idUser: "",
+      firstname: "",
+      lastname: "",
       age: "",
-      Komoditas: "",
-      Harga: "",
-      Provinsi: "",
-      Kota: "",
-      Ukuran: "",
-      Tanggal: "",
-      data: [],
-      message: "",
 
-      modSuccess: false,
-      modFailed: false,
+      versionId: "",
     };
   }
+
+  handleChange = (event) => {
+    this.setState({ age: event.target.value });
+    // setAge(event.target.value);
+  };
 
   handleClickOpen = () => () => {
     this.setState({ setOpen: true });
   };
-  closeModalAdd = () => {
-    this.setState({ setOpen: false });
-  };
+
   handleClose = () => {
     this.setState({
       setOpen: false,
     });
   };
 
-  addComponent = () => () => {
-    this.setState({
-      setOpenEdit: true,
-      loadingEdit: true,
+  addDataUser = () => () => {
+    const firstname = this.state.firstname;
+    const lastname = this.state.lastname;
+    const age = this.state.age;
+    fetch("https://simple-contact-crud.herokuapp.com/contact", {
+      mode: "no-cors",
+      method: "POST",
+      // credentials: "include",
+      // credentials: "same-origin",
+      // redirect: "follow",
+      // referrerPolicy: "no-referrer",
+      // headers: {
+      //   "Access-Control-Allow-Origin": "*",
+      //   "Content-Type": "application/json",
+      //   "Access-Control-Allow-Headers":
+      //     "Content-Type, Authorization, X-Requested-With, Origin, Accept, ",
+      //   "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
+      //   "Access-Control-Allow-Credentials": true,
+      //   // "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      // },
+      body: JSON.stringify({
+        firstname: "Herlan",
+        // firstname: `${firstname}`,
+        lastname: "Mustopa",
+        age: 21,
+        // age: `${age}`,
+        photo:
+          "http://vignette1.wikia.nocookie.net/lotr/images/6/68/Bilbo_baggins.jpg/revision/latest?cb=20130202022550",
+      }),
+    })
+      .then((res) => {
+        res.json();
+        // if(res !==null ){
+
+        // }
+        console.log(JSON.stringify(res.data));
+      })
+      .then((json) => console.log(json));
+    // alert(id);
+  };
+  addDataUser2 = () => () => {
+    // const firstname = this.state.firstname;
+    // const lastname = this.state.lastname;
+    // const age = this.state.age;
+    var axios = require("axios");
+    var data = JSON.stringify({
+      firstName: "Ariel22",
+      lastName: "Noah",
+      age: 32,
+      photo: "string",
     });
-  };
-  componentDidMount() {
-    this.fetchData();
-  }
-  fetchData = async (params = null) => {
-    try {
-      const data = await getData(params);
 
-      if (data) {
-        const newData = Array.from(new Set(data.map((i) => i.id)))
-          .filter((i) => i)
-          .map((i) => data.find((item) => item.id === i));
-
-        await this.setState(data[newData]);
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  postAddData = async (params) => {
-    try {
-      const response = await addData(params);
-      if (response?.data?.error) {
-        this.setState({
-          message: "Terjadi kesalahan pada server",
-          showSnackbar: true,
-        });
-      } else {
-        this.setState({
-          message: "Data Berhasil Ditambahkan",
-          showSnackbar: true,
-        });
-      }
-    } catch (e) {
-      console.log("error: ", e);
-      this.setState({
-        showSnackbar: true,
-      });
-    }
-  };
-
-  handleSubmitAdd = async () => {
-    let postData = [];
-    let data = {
-      uuid: uuidv4(),
-      komoditas: this.state.Komoditas,
-      price: this.state.Harga,
-      size: this.state.Ukuran,
-      area_provinsi: this.state.Provinsi,
-      area_kota: this.state.Kota,
-      tgl_parsed: this.state.Tanggal,
-      timestamp: moment().unix(),
+    var config = {
+      method: "post",
+      url: "https://simple-contact-crud.herokuapp.com/contact",
+      // crossorigin:true,
+      // mode: "no-cors",
+      withCredentials: true,
+      // credentials: 'include',
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
+        "Access-Control-Allow-Credentials": true,
+      },
+      data: data,
     };
 
-    postData.push(data);
-
-    await this.postAddData(postData);
-
-    this.closeModalAdd();
-    window.location.reload();
-    await this.fetchData();
+    axios(config)
+      .then(function (response) {
+        console.log(JSON.stringify(response.data));
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   };
+
   render() {
+    const roleId = localStorage.getItem("roleId");
+
     return (
       <>
-        <ColorButton
-          sx={{ mr: 2 }}
+        <Button
+          disabled={roleId == 4 ? true : false}
           underline="none"
           onClick={this.handleClickOpen()}
           size="small"
           variant="contained"
           endIcon={<AddIcon />}
         >
-          Tambah Data Ikan Baru
-        </ColorButton>
-
-        <Snackbar
-          open={this.state.showSnackbar}
-          autoHideDuration={6000}
-          // message={this.state.message}
-          // onClose={() => setShowSnackbar(false)}
-        >
-          <Alert elevation={6} variant="filled" severity="success">
-            {this.state.message}
-          </Alert>
-        </Snackbar>
-
+          Add User
+        </Button>
         <Dialog
-          fullWidth="true"
+          fullWidth={true}
           open={this.state.setOpen}
-          // onClose={this.handleClose}
+          // onClose={this.handleClosedEdit}
           scroll={this.state.scroll}
           aria-labelledby="scroll-dialog-title"
           aria-describedby="scroll-dialog-description"
+          sx={{ borderRadius: "20px !important" }}
         >
           <Stack
             direction="row"
@@ -389,7 +175,7 @@ class AddData extends React.Component {
             justifyContent="space-between"
           >
             <DialogTitle id="scroll-dialog-title" alignItems="center">
-              Masukan Data Ikan
+              Add User
             </DialogTitle>
             <DialogTitle id="scroll-dialog-title" alignItems="center">
               <IconButton aria-label="expand row" size="small">
@@ -397,124 +183,91 @@ class AddData extends React.Component {
               </IconButton>
             </DialogTitle>
           </Stack>
+
           <DialogContent dividers={this.state.scroll === "paper"}>
             <DialogContentText id="scroll-dialog-description" tabIndex={-1}>
-              <Stack>
-                <TextField
-                  sx={{ my: 1 }}
-                  fullWidth
-                  label="Komoditas"
-                  id="fullWidth"
-                  // size="small"
-                  onChange={(event) => {
-                    this.setState({
-                      Komoditas: event.target.value,
-                    });
-                  }}
-                />
+              {this.state.loadingEdit ? (
+                <Box
+                  sx={{ width: "100%", justifyContent: "center" }}
+                  justifyItems="center"
+                >
+                  <Skeleton width={500} height={40} />
+                  <Skeleton animatio="wave" width={500} height={40} />
+                  <Skeleton animation={false} width={500} height={40} />
+                </Box>
+              ) : (
+                <Box>
+                  <TextField
+                    sx={{ mb: 4 }}
+                    required
+                    id="outlined-required"
+                    label="firstname"
+                    size="small"
+                    fullWidth={true}
+                    defaultValue={this.state.firstname}
+                    onChange={(event) => {
+                      this.setState({
+                        firstname: event.target.value,
+                      });
+                    }}
+                  />
+                  <TextField
+                    sx={{ mb: 4 }}
+                    required
+                    id="outlined-required"
+                    label="lastname"
+                    size="small"
+                    fullWidth={true}
+                    defaultValue={this.state.lastname}
+                    onChange={(event) => {
+                      this.setState({
+                        lastname: event.target.value,
+                      });
+                    }}
+                  />
 
-                <Autocomplete
-                  sx={{ my: 1 }}
-                  value={this.value}
-                  disablePortal
-                  id="combo-box-demo"
-                  options={ukuran}
-                  getOptionLabel={(option) => option.label}
-                  onSelect={(event) => {
-                    this.setState({
-                      Ukuran: event.target.value,
-                    });
-                  }}
-                  fullWidth
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Ukuran"
-                      // size="small"
-                      fullWidth
-                      name="role"
-                    />
-                  )}
-                />
-              </Stack>
-              <Stack>
-                <Autocomplete
-                  sx={{ my: 1 }}
-                  value={this.value}
-                  disablePortal
-                  id="combo-box-demo"
-                  options={provinsi}
-                  getOptionLabel={(option) => option.label}
-                  onSelect={(event) => {
-                    this.setState({
-                      Provinsi: event.target.value,
-                    });
-                  }}
-                  fullWidth
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Provinsi"
-                      // size="small"
-                      fullWidth
-                    />
-                  )}
-                />
-              </Stack>
-              <Stack>
-                <Autocomplete
-                  sx={{ my: 1 }}
-                  value={this.value}
-                  disablePortal
-                  id="combo-box-demo"
-                  options={kota}
-                  getOptionLabel={(option) => option.label}
-                  onSelect={(event) => {
-                    this.setState({
-                      Kota: event.target.value,
-                    });
-                  }}
-                  fullWidth
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Kota"
-                      // size="small"
-                      fullWidth
-                      name="role"
-                    />
-                  )}
-                />
-              </Stack>
+                  <TextField
+                    sx={{ mb: 4 }}
+                    required
+                    id="outlined-required"
+                    label="age"
+                    size="small"
+                    fullWidth={true}
+                    defaultValue={this.state.age}
+                    onChange={(event) => {
+                      this.setState({
+                        age: event.target.value,
+                      });
+                    }}
+                  />
 
-              <TextField
-                sx={{ my: 1 }}
-                fullWidth
-                autoComplete="value"
-                type="text"
-                label="Harga"
-                onChange={(event) => {
-                  this.setState({
-                    Harga: event.target.value,
-                  });
-                }}
-              />
-              <TextField
-                sx={{ my: 1 }}
-                fullWidth
-                autoComplete="value"
-                type="date"
-                label=""
-                onChange={(event) => {
-                  this.setState({
-                    Tanggal: event.target.value,
-                  });
-                }}
-              />
+                  {/* <TextField
+                    sx={{ mb: 4 }}
+                    required
+                    id="outlined-required"
+                    label="Input"
+                    size="small"
+                    fullWidth={true}
+                    defaultValue={this.state.username}
+                    onChange={(event) => {
+                      this.setState({
+                        username: event.target.value,
+                      });
+                    }}
+                  /> */}
+                </Box>
+              )}
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={this.handleSubmitAdd}>Save</Button>
+            <Button
+              variant="contained"
+              // color="myBlue"
+              size="small"
+              onClick={this.addDataUser()}
+            >
+              Save
+            </Button>
           </DialogActions>
         </Dialog>
       </>
