@@ -36,10 +36,7 @@ export default function ChannelAction() {
         >
           <Stack>
             <Typography variant="h6" sx={{ mt: 4 }}>
-              List Daftar Karyawan
-            </Typography>
-            <Typography variant="caption" sx={{ mb: 1 }}>
-              Daftar Karyawan yang bekerja di PT.Sirka
+              List User
             </Typography>
           </Stack>
 
@@ -53,22 +50,7 @@ export default function ChannelAction() {
           </Stack>
         </Stack>
         <Divider sx={{ mb: 2 }} />
-        <SearchData sx={{ mb: 30 }} />
-        {/* <ChannelList sx={{ mb: 2 }} /> */}
-        {/* <Stack width="200" sx={{ px: 2 }}>
-          <Header
-            search={search}
-            setSearch={setSearch}
-            onSearch={onSubmitSearch}
-          />
-        </Stack> */}
-        {/* <List list={data} loading={loading} /> */}
-        {/* {!loading && data.length === 0 && (
-          <Empty
-            title="Data belum tersedia"
-            desc="Data yang Anda cari tidak ada atau belum tersedia saat ini, silahkan isi data baru terlebih dahulu."
-          />
-        )} */}
+
         <TableData sx={{ mb: 30 }} />
       </Card>
 
